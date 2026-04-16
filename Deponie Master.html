@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deponie-Fachtest | Ver- und Entsorgermeister</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #111827;
+    --card2: #1f2937;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --accent: #22c55e;
+    --accent2: #38bdf8;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --border: rgba(255,255,255,.10);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 22px 16px 70px; }
+  .hero, .card {
+    background: rgba(17,24,39,.88);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.24);
+    backdrop-filter: blur(8px);
+  }
+  .hero { padding: 22px; margin-bottom: 18px; }
+  h1 { margin: 0 0 10px; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.1; }
+  h2 { margin: 0 0 10px; }
+  .sub { color: var(--muted); margin-bottom: 14px; }
+  .meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .badge {
+    padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.05);
+    border: 1px solid var(--border); font-size: .95rem;
+  }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  button {
+    appearance: none; border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 700;
+    font-size: 1rem; cursor: pointer;
+  }
+  .primary { background: var(--accent); color: #052e16; }
+  .secondary { background: #0ea5e9; color: #082f49; }
+  .ghost { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid var(--border); }
+  .danger { background: var(--danger); color: white; }
+  .progress {
+    height: 14px; background: rgba(255,255,255,.06); border: 1px solid var(--border);
+    border-radius: 999px; overflow: hidden; margin: 16px 0 6px;
+  }
+  .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .25s ease; }
+  .status {
+    display: flex; justify-content: space-between; gap: 10px; color: var(--muted);
+    font-size: .96rem; margin-bottom: 18px;
+  }
+  .card { padding: 20px; }
+  .question-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; margin-bottom: 12px; }
+  .question-no { color: var(--accent2); font-weight: 700; letter-spacing: .02em; }
+  .points {
+    white-space: nowrap; color: #d1fae5; background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.24);
+    padding: 6px 10px; border-radius: 999px; font-size: .92rem;
+  }
+  .qtext { font-size: clamp(1.12rem, 2vw, 1.32rem); margin: 4px 0 16px; }
+  .option {
+    display: block; padding: 14px 14px; border-radius: 14px; border: 1px solid var(--border);
+    background: rgba(255,255,255,.03); margin: 10px 0; cursor: pointer;
+  }
+  .option:hover { background: rgba(255,255,255,.06); }
+  .option input { margin-right: 10px; transform: scale(1.16); }
+  .muted { color: var(--muted); }
+  .hidden { display: none; }
+  .score-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+  .score-card { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .score-card strong { display: block; font-size: 1.7rem; margin-top: 5px; }
+  .result-text { font-size: 1.05rem; margin: 14px 0 4px; }
+  .footer-note { color: var(--muted); font-size: .92rem; margin-top: 18px; }
+  .sources { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: .92rem; }
+  .sources ul { margin: 8px 0 0 18px; }
+  .review-item {
+    border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin: 10px 0; background: rgba(255,255,255,.03);
+  }
+  .good { color: #86efac; }
+  .bad { color: #fca5a5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>Deponie-Fachtest</h1>
+    <div class="sub">Schwere Prüfungsfassung für Ver- und Entsorgermeister. Kein Lernmodus, keine Tipps, keine Streicheleinheiten für geratenes Halbwissen.</div>
+    <div class="meta">
+      <div class="badge">33 Fragen</div>
+      <div class="badge">70 Punkte maximal</div>
+      <div class="badge">Schwer, aber fair</div>
+      <div class="badge">Schwerpunkte: DepV, KrWG, Nachweisführung, Betriebspraxis</div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="startBtn">Test starten</button>
+      <button class="secondary hidden" id="speakBtn">Frage vorlesen</button>
+      <button class="ghost hidden" id="stopSpeakBtn">Vorlesen stoppen</button>
+    </div>
+  </section>
+
+  <section id="testWrap" class="hidden">
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="status">
+      <div id="progressText">Frage 1 von 33</div>
+      <div id="pointText">Punkte dieser Frage: 2</div>
+    </div>
+
+    <div class="card">
+      <div class="question-head">
+        <div class="question-no" id="questionNo">Frage 1</div>
+        <div class="points" id="questionPoints">2 Punkte</div>
+      </div>
+      <div class="qtext" id="questionText"></div>
+      <div id="options"></div>
+      <div class="controls" style="margin-top:18px;">
+        <button class="ghost" id="backBtn">Zurück</button>
+        <button class="primary" id="nextBtn">Weiter</button>
+        <button class="danger hidden" id="finishBtn">Test abgeben</button>
+      </div>
+      <div class="footer-note">Mehrfachauswahl nur dort, wo es ausdrücklich dabei steht. Ansonsten gilt: genau eine Antwort.</div>
+    </div>
+  </section>
+
+  <section id="resultWrap" class="card hidden">
+    <h2>Auswertung</h2>
+    <div class="score-box">
+      <div class="score-card">Erreichte Punkte<strong id="scoreValue">0</strong></div>
+      <div class="score-card">Maximal<strong>70</strong></div>
+      <div class="score-card">Quote<strong id="percentValue">0 %</strong></div>
+      <div class="score-card">Bewertung<strong id="gradeValue">-</strong></div>
+    </div>
+    <div class="result-text" id="resultText"></div>
+    <div class="controls">
+      <button class="ghost" id="reviewBtn">Antwortübersicht anzeigen</button>
+      <button class="primary" id="restartBtn">Neu starten</button>
+    </div>
+    <div id="reviewWrap" class="hidden"></div>
+
+    <div class="sources">
+      <strong>Fachliche Grundlage der Testinhalte:</strong>
+      <ul>
+        <li>Kreislaufwirtschaftsgesetz, insbesondere § 6 Abfallhierarchie</li>
+        <li>Deponieverordnung, insbesondere § 2, § 8, § 25, § 26 sowie Anhang 3</li>
+        <li>Nachweisverordnung</li>
+        <li>LAGA Mitteilung 32 (PN 98), redaktionell überarbeitet Oktober 2024</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+const questions = [{"type": "single", "points": 2, "q": "Welche Rangfolge der Abfallbewirtschaftung ist nach § 6 KrWG korrekt?", "options": ["Verwertung → Vermeidung → Beseitigung → Recycling → Vorbereitung zur Wiederverwendung", "Vermeidung → Vorbereitung zur Wiederverwendung → Recycling → sonstige Verwertung → Beseitigung", "Vorbereitung zur Wiederverwendung → Vermeidung → Recycling → Beseitigung → energetische Verwertung", "Recycling → Vermeidung → sonstige Verwertung → Vorbereitung zur Wiederverwendung → Beseitigung"], "answer": [1]}, {"type": "single", "points": 2, "q": "Wozu dient die grundlegende Charakterisierung eines Abfalls im Sinne der DepV am ehesten?", "options": ["Nur zur preislichen Einstufung für die Gebührenabrechnung", "Zur Ermittlung und Bewertung aller für eine langfristig sichere Deponierung erforderlichen Informationen", "Ausschließlich zur Entscheidung, ob der Abfall transportfähig ist", "Nur zur Erstellung eines Begleitscheins für gefährliche Abfälle"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Deponieklassen nennt die Deponieverordnung?", "options": ["DK A, DK B, DK C, DK D", "DK 0, DK I, DK II, DK III, DK IV", "DK 1 bis DK 5 ohne DK 0", "Nur DK I, DK II und DK III"], "answer": [1]}, {"type": "multi", "points": 3, "q": "Welche Punkte gehören zur Annahmekontrolle bei jeder Abfallanlieferung nach § 8 DepV? Mehrere Antworten sind richtig.", "options": ["Prüfung, ob die grundlegende Charakterisierung vorliegt", "Feststellung der Masse sowie Kontrolle von Abfallschlüssel und Bezeichnung", "Sofortige vollständige Laboranalyse jeder einzelnen Fuhre", "Visuelle Kontrolle, ob der angelieferte Abfall mit den Angaben übereinstimmt", "Führung eines Wettertagebuchs für jede Anlieferung"], "answer": [0, 1, 3]}, {"type": "single", "points": 2, "q": "Welche Aussage zur Rückstellprobe trifft nach § 8 DepV zu?", "options": ["Sie ist grundsätzlich bei jeder Fuhre zu nehmen und 12 Monate aufzubewahren", "Sie ist nur bei DK IV zu nehmen", "Ist die Annahmekontrolle nicht ausschließlich visuell möglich, ist eine Rückstellprobe zu nehmen und mindestens einen Monat aufzubewahren", "Rückstellproben sind seit 2024 entfallen"], "answer": [2]}, {"type": "single", "points": 2, "q": "Was ist im Deponiebetrieb unter Konformitätsprüfung am treffendsten zu verstehen?", "options": ["Abgleich, ob ein Abfallstrom den Angaben und der grundlegenden Charakterisierung weiterhin entspricht", "Abschlussprüfung nach endgültiger Stilllegung", "Prüfung, ob ein Deponiefahrzeug TÜV hat", "Abnahme der Oberflächenabdichtung durch die Bauleitung"], "answer": [0]}, {"type": "single", "points": 2, "q": "Ein Abfall weist einen hohen Anteil an organischer Substanz auf. Was ist aus Deponiesicht besonders kritisch?", "options": ["Nur das Volumen des LKW", "Gasbildung, Setzungen und langfristige Emissionen", "Ausschließlich die Farbe des Materials", "Dass der Abfall im Sommer warm angeliefert wird"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welches Ziel verfolgt das Abdichtungssystem einer Deponie in erster Linie?", "options": ["Die Verdunstung des Oberflächenwassers zu erhöhen", "Den Eintrag von Niederschlagswasser zu minimieren und den Austrag von Schadstoffen in Untergrund und Grundwasser zu verhindern", "Nur den Fahrverkehr auf dem Deponiekörper zu erleichtern", "Ausschließlich optische Eingrünung zu ermöglichen"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Funktion hat das Sickerwassererfassungssystem?", "options": ["Es ersetzt die geologische Barriere vollständig", "Es sammelt anfallendes Sickerwasser, damit es gefasst, überwacht und behandelt werden kann", "Es dient ausschließlich der Staubbekämpfung", "Es leitet Wasser gezielt in den Deponiekörper zurück"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Aussage zur geologischen Barriere ist fachlich richtig?", "options": ["Sie ist nur eine freiwillige Zusatzmaßnahme", "Sie ist Bestandteil des Sicherungskonzepts und begrenzt den Stofftransport in den Untergrund", "Sie besteht immer nur aus Kunststoffdichtungsbahnen", "Sie dient nur bei Untertagedeponien"], "answer": [1]}, {"type": "single", "points": 2, "q": "Was ist bei der Ablagerung von Abfällen mit erhöhtem Reaktionspotenzial besonders zu beachten?", "options": ["Nur die Anzahl der eingesetzten Raupen", "Mögliche chemische Reaktionen, Temperaturentwicklung, Gasbildung und Inkompatibilitäten mit anderen Abfällen", "Nur der Radstand der Anlieferfahrzeuge", "Dass der Abfall möglichst tief eingebaut wird, dann ist alles unkritisch"], "answer": [1]}, {"type": "single", "points": 2, "q": "Warum ist eine saubere Deklaration des Abfallschlüssels praktisch so wichtig?", "options": ["Weil sie über Annahmefähigkeit, Nachweisführung, Analytik und den zulässigen Entsorgungsweg mitentscheidet", "Nur für die Reihenfolge am Waagehaus", "Nur für die interne Buchhaltung, nicht für den Betrieb", "Weil sonst die Reifen des LKW schneller verschleißen"], "answer": [0]}, {"type": "multi", "points": 3, "q": "Welche Aspekte gehören typischerweise zur fachgerechten Eingangskontrolle am Waagehaus beziehungsweise an der Annahmestelle? Mehrere Antworten sind richtig.", "options": ["Abgleich von Begleitpapieren und Deklaration", "Plausibilitätsprüfung von Herkunft und Abfallart", "Organoleptische beziehungsweise visuelle Prüfung", "Beliebige Umlagerung ohne Dokumentation", "Prüfung auf offenkundige Fehlwürfe oder Störstoffe"], "answer": [0, 1, 2, 4]}, {"type": "single", "points": 2, "q": "Welcher Grundsatz ist bei der Probenahme von Abfällen nach LAGA PN 98 zentral?", "options": ["Es genügt immer eine Handprobe von oben", "Die Probe muss repräsentativ für das zu beurteilende Material sein", "Feuchte Abfälle dürfen grundsätzlich nicht beprobt werden", "Nur die feinste Fraktion ist relevant"], "answer": [1]}, {"type": "single", "points": 2, "q": "Ein Analysenbericht ist formal vollständig, aber das Materialbild der Fuhre passt offensichtlich nicht zur Deklaration. Was ist fachlich am ehesten richtig?", "options": ["Annehmen, weil Papier vorgeht", "Annahme stoppen beziehungsweise zurückweisen und den Sachverhalt klären", "Ablagern und später entscheiden", "Nur den Fahrer mündlich verwarnen"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Aussage zur Stilllegungsphase einer Deponie ist richtig?", "options": ["In der Stilllegungsphase entfallen Überwachung und Sicherungsmaßnahmen im Wesentlichen", "Stilllegung bedeutet sofortige Beendigung aller Betreiberpflichten", "Die Deponie muss weiter gesichert, überwacht und entsprechend den behördlichen Festlegungen betrieben werden", "Stilllegung betrifft nur die Bepflanzung der Oberfläche"], "answer": [2]}, {"type": "single", "points": 2, "q": "Was beschreibt die Nachsorgephase am treffendsten?", "options": ["Einen Zeitraum nach der endgültigen Stilllegung, in dem Überwachungs- und Unterhaltungspflichten fortbestehen können", "Nur die Zeit zwischen zwei Anlieferungen", "Die jährliche Wartung der Waage", "Eine freiwillige Phase ohne rechtliche Relevanz"], "answer": [0]}, {"type": "single", "points": 2, "q": "Welche Gefahr besteht, wenn Oberflächenwasser unkontrolliert in den Deponiekörper eindringt?", "options": ["Die Waage zeigt geringere Tonnagen an", "Mehr Sickerwasser, höhere Stoffausträge und zusätzliche Belastung der Sicherungssysteme", "Nur eine schnellere Begrünung", "Keine nennenswerte, Wasser ist grundsätzlich unproblematisch"], "answer": [1]}, {"type": "single", "points": 2, "q": "Warum ist die Trennung inkompatibler Abfallarten betriebspraktisch wichtig?", "options": ["Weil dadurch die Radladerfarbe besser erkennbar ist", "Um unerwünschte Reaktionen, Qualitätsverluste und Sicherheitsrisiken zu vermeiden", "Nur um die Ablagerung optisch ordentlicher wirken zu lassen", "Weil gemischte Lagerung immer automatisch verboten ist, ohne Ausnahme"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welcher Zusammenhang ist für Deponiegas typisch?", "options": ["Es entsteht vor allem aus biologisch abbaubaren organischen Anteilen", "Es entsteht ausschließlich aus mineralischen Inertabfällen", "Es besteht nur aus Sauerstoff und Stickstoff", "Es spielt nur bei DK IV eine Rolle"], "answer": [0]}, {"type": "single", "points": 2, "q": "Welche betriebliche Maßnahme dient unmittelbar der Minimierung von Emissionen und Betriebsrisiken auf der Ablagerungsfläche?", "options": ["Möglichst große offene Arbeitsfläche dauerhaft unbedeckt lassen", "Geordneter Einbau, Verdichtung und klein gehaltene Arbeitsbereiche", "Abfälle grundsätzlich unverdichtet abkippen", "Sickerwasser auf die Fahrwege pumpen"], "answer": [1]}, {"type": "multi", "points": 3, "q": "Welche Unterlagen oder Informationen sind für eine rechtssichere Annahme gefährlicher oder besonders überwachungsbedürftiger Abfälle besonders relevant? Mehrere Antworten sind richtig.", "options": ["Deklarationsanalyse beziehungsweise Analysennachweise", "Angaben zu Herkunft und Anfallstelle", "Ordnungsgemäße Nachweisführung", "Farbe des Fahrerhauses", "Plausible Zuordnung zum vorgesehenen Entsorgungsweg"], "answer": [0, 1, 2, 4]}, {"type": "single", "points": 2, "q": "Was ist der fachlich beste Umgang mit offensichtlich heterogenen Abfällen, bei denen eine Einzelprobe wenig aussagekräftig wäre?", "options": ["Auf Probenahme ganz verzichten", "Eine dem Material angepasste, repräsentative Probenahmestrategie anwenden", "Nur den trockensten Anteil beproben", "Nur Angaben des Anlieferers übernehmen"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Aussage zum Dokumentationszweck des Deponiebetriebs ist am treffendsten?", "options": ["Dokumentation dient nur der Statistik, nicht der Nachvollziehbarkeit", "Dokumentation sichert Rückverfolgbarkeit, Eigenkontrolle, Behördennachweis und betriebliche Steuerung", "Dokumentation ist nur bei Störungen erforderlich", "Mündliche Erinnerung des Platzmeisters genügt grundsätzlich"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Aussage zur Deponieklasse IV ist fachlich richtig?", "options": ["Sie ist für besonders gefährliche Abfälle vorgesehen und umfasst untertägige Deponien", "Sie ist die Standardklasse für unbelasteten Boden", "Sie ist identisch mit DK 0", "Sie ist seit Jahren nicht mehr zulässig"], "answer": [0]}, {"type": "single", "points": 2, "q": "Weshalb ist Setzungsverhalten für Planung und Betrieb von Deponien wichtig?", "options": ["Nur aus optischen Gründen", "Weil Setzungen Entwässerung, Abdichtung, Standsicherheit und Oberflächenprofil beeinflussen können", "Es betrifft nur die Einzäunung", "Setzungen spielen nur während der Bauphase vor Inbetriebnahme eine Rolle"], "answer": [1]}, {"type": "single", "points": 2, "q": "Ein Abfall erfüllt analytisch einzelne Kriterien knapp, zeigt aber starke Inhomogenität und unklare Herkunft. Was ist fachlich der beste Ansatz?", "options": ["Sofortige Regelannahme, weil Grenzwerte knapp eingehalten sind", "Erweiterte Prüfung, Klärung der Herkunft und gegebenenfalls erneute repräsentative Beprobung", "Nur die günstigste Entsorgungsoption wählen", "Die Herkunft ist irrelevant, solange ein LKW-Schein vorliegt"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Aussage beschreibt den Zweck von Zuordnungskriterien in Anhang 3 DepV am besten?", "options": ["Sie legen fest, welche abfallrechtlichen und chemischen Anforderungen für Ablagerung oder Einsatz auf bestimmten Deponieklassen eingehalten werden müssen", "Sie bestimmen nur die Reihenfolge der Abladerampe", "Sie regeln ausschließlich Personalunterweisungen", "Sie sind nur für Altdeponien relevant"], "answer": [0]}, {"type": "single", "points": 2, "q": "Warum reicht eine reine Sichtkontrolle bei vielen Abfällen nicht aus?", "options": ["Weil relevante Schadstoffgehalte und Elutionsverhalten visuell nicht sicher erkennbar sind", "Weil Sichtkontrollen rechtlich verboten sind", "Weil nur Geruchsproben zulässig sind", "Weil nur das Laborpersonal Abfälle sehen darf"], "answer": [0]}, {"type": "single", "points": 2, "q": "Welche Aussage zur elektronischen Nachweisführung nach NachwV ist am ehesten zutreffend?", "options": ["Sie ersetzt jede fachliche Prüfung des Abfalls", "Sie ist Teil des formalen Entsorgungsnachweises, ersetzt aber nicht Annahmekontrolle und Plausibilitätsprüfung vor Ort", "Sie gilt nur für Siedlungsabfälle aus Haushalten", "Sie ist für gefährliche Abfälle unzulässig"], "answer": [1]}, {"type": "single", "points": 2, "q": "Welche Reaktion ist fachlich richtig, wenn bei der Eingangskontrolle ein nicht deklarierter Störstoffanteil entdeckt wird?", "options": ["Ignorieren, solange die Gesamtmenge klein ist", "Sachverhalt dokumentieren, Annahmeentscheidung neu bewerten und gegebenenfalls zurückweisen oder separieren", "Störstoffe ohne Dokumentation in den Randwall einbauen", "Nur den Fahrer bitten, nächstes Mal besser aufzupassen"], "answer": [1]}, {"type": "multi", "points": 3, "q": "Welche Aussagen zur fachgerechten Deponiebetriebsführung sind richtig? Mehrere Antworten sind richtig.", "options": ["Kurze Transportwege auf der Arbeitsfläche können den Betrieb erleichtern", "Saubere Trennung von Stoffströmen verbessert Kontrolle und Sicherheit", "Unklare Chargen sollten ohne Zeitverlust mit sicheren Chargen vermischt werden", "Geordnete Betriebsabläufe erleichtern Dokumentation und Rückverfolgbarkeit", "Emissionen und Wasserzutritt sollten möglichst minimiert werden"], "answer": [0, 1, 3, 4]}, {"type": "single", "points": 2, "q": "Was ist der fachlich wichtigste Grund, offenkundig falsch deklarierte Abfälle nicht einfach 'ausnahmsweise' anzunehmen?", "options": ["Weil sonst die Schichtplanung komplizierter wird", "Weil dadurch Rechtsverstöße, Sicherheitsrisiken und spätere Umweltprobleme entstehen können", "Weil das nur die Gebührenkalkulation stört", "Weil falsch deklarierte Abfälle immer harmlos sind"], "answer": [1]}];
+let current = 0;
+let answers = Array(questions.length).fill(null);
+
+const startBtn = document.getElementById('startBtn');
+const speakBtn = document.getElementById('speakBtn');
+const stopSpeakBtn = document.getElementById('stopSpeakBtn');
+const testWrap = document.getElementById('testWrap');
+const resultWrap = document.getElementById('resultWrap');
+const questionNo = document.getElementById('questionNo');
+const questionPoints = document.getElementById('questionPoints');
+const questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options');
+const progressText = document.getElementById('progressText');
+const pointText = document.getElementById('pointText');
+const bar = document.getElementById('bar');
+const backBtn = document.getElementById('backBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishBtn = document.getElementById('finishBtn');
+const scoreValue = document.getElementById('scoreValue');
+const percentValue = document.getElementById('percentValue');
+const gradeValue = document.getElementById('gradeValue');
+const resultText = document.getElementById('resultText');
+const restartBtn = document.getElementById('restartBtn');
+const reviewBtn = document.getElementById('reviewBtn');
+const reviewWrap = document.getElementById('reviewWrap');
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+let testData = deepClone(questions);
+shuffle(testData);
+
+function renderQuestion() {
+  const q = testData[current];
+  questionNo.textContent = `Frage ${current + 1}`;
+  questionPoints.textContent = `${q.points} Punkt${q.points > 1 ? 'e' : ''}`;
+  questionText.textContent = q.q;
+  progressText.textContent = `Frage ${current + 1} von ${testData.length}`;
+  pointText.textContent = `Punkte dieser Frage: ${q.points}`;
+  bar.style.width = `${(current / testData.length) * 100}%`;
+
+  optionsEl.innerHTML = '';
+  const inputType = q.type === 'multi' ? 'checkbox' : 'radio';
+  q.options.forEach((opt, idx) => {
+    const id = `opt_${current}_${idx}`;
+    const label = document.createElement('label');
+    label.className = 'option';
+
+    const input = document.createElement('input');
+    input.type = inputType;
+    input.name = `q_${current}`;
+    input.value = idx;
+    input.id = id;
+
+    if (answers[current] && answers[current].includes(idx)) input.checked = true;
+    input.addEventListener('change', saveAnswer);
+
+    label.appendChild(input);
+    const span = document.createElement('span');
+    span.textContent = opt;
+    label.appendChild(span);
+    optionsEl.appendChild(label);
+  });
+
+  backBtn.disabled = current === 0;
+  nextBtn.classList.toggle('hidden', current === testData.length - 1);
+  finishBtn.classList.toggle('hidden', current !== testData.length - 1);
+}
+
+function saveAnswer() {
+  const checked = Array.from(optionsEl.querySelectorAll('input:checked')).map(el => Number(el.value)).sort((a,b) => a-b);
+  answers[current] = checked.length ? checked : null;
+}
+
+function arraysEqual(a,b) {
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  return a.every((v,i) => v === b[i]);
+}
+
+function computeScore() {
+  let score = 0;
+  testData.forEach((q, i) => {
+    const user = answers[i] ? [...answers[i]].sort((a,b)=>a-b) : null;
+    const correct = [...q.answer].sort((a,b)=>a-b);
+    if (arraysEqual(user, correct)) score += q.points;
+  });
+  return score;
+}
+
+function ratingFromPercent(p) {
+  if (p >= 90) return 'sehr stark';
+  if (p >= 75) return 'gut';
+  if (p >= 60) return 'bestanden';
+  if (p >= 45) return 'knapp darunter';
+  return 'nicht bestanden';
+}
+
+function resultSentence(p) {
+  if (p >= 90) return 'Sehr starke Leistung. Wer hier noch Fehler macht, macht sie wenigstens auf hohem Niveau.';
+  if (p >= 75) return 'Gute, belastbare Fachkenntnisse mit kleineren Lücken.';
+  if (p >= 60) return 'Bestanden, aber in einer echten Fachrunde würden noch Nachfragen kommen.';
+  if (p >= 45) return 'Teilweise solide, aber mehrere sicherheits- und rechtsrelevante Lücken.';
+  return 'Für einen schweren Fachtest zu wenig.';
+}
+
+function showResults() {
+  saveAnswer();
+  const score = computeScore();
+  const percent = Math.round((score / 70) * 100);
+  scoreValue.textContent = `${score}`;
+  percentValue.textContent = `${percent} %`;
+  gradeValue.textContent = ratingFromPercent(percent);
+  resultText.textContent = resultSentence(percent);
+  testWrap.classList.add('hidden');
+  resultWrap.classList.remove('hidden');
+  bar.style.width = '100%';
+}
+
+function renderReview() {
+  reviewWrap.innerHTML = '';
+  testData.forEach((q, i) => {
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    const user = answers[i] || [];
+    const ok = arraysEqual([...user].sort((a,b)=>a-b), [...q.answer].sort((a,b)=>a-b));
+    const chosenText = user.length ? user.map(idx => q.options[idx]).join(' | ') : 'Keine Antwort';
+    const correctText = q.answer.map(idx => q.options[idx]).join(' | ');
+    item.innerHTML = `
+      <div><strong>Frage ${i+1}</strong> <span class="${ok ? 'good' : 'bad'}">${ok ? 'richtig' : 'falsch'}</span></div>
+      <div style="margin-top:6px;">${q.q}</div>
+      <div class="muted" style="margin-top:8px;">Deine Antwort: ${chosenText}</div>
+      <div class="muted">Richtig: ${correctText}</div>
+    `;
+    reviewWrap.appendChild(item);
+  });
+}
+
+function speakCurrentQuestion() {
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const q = testData[current];
+  const parts = [];
+  parts.push(`Frage ${current + 1}. ${q.q}`);
+  q.options.forEach((opt, idx) => parts.push(`Antwort ${idx + 1}: ${opt}`));
+  const utterance = new SpeechSynthesisUtterance(parts.join(' '));
+  utterance.lang = 'de-DE';
+  utterance.rate = 0.98;
+  synth.speak(utterance);
+}
+
+startBtn.addEventListener('click', () => {
+  current = 0;
+  answers = Array(testData.length).fill(null);
+  resultWrap.classList.add('hidden');
+  testWrap.classList.remove('hidden');
+  speakBtn.classList.remove('hidden');
+  stopSpeakBtn.classList.remove('hidden');
+  renderQuestion();
+});
+
+backBtn.addEventListener('click', () => {
+  saveAnswer();
+  if (current > 0) { current--; renderQuestion(); }
+});
+
+nextBtn.addEventListener('click', () => {
+  saveAnswer();
+  if (current < testData.length - 1) { current++; renderQuestion(); }
+});
+
+finishBtn.addEventListener('click', showResults);
+
+restartBtn.addEventListener('click', () => {
+  testData = deepClone(questions);
+  shuffle(testData);
+  current = 0;
+  answers = Array(testData.length).fill(null);
+  reviewWrap.classList.add('hidden');
+  reviewBtn.textContent = 'Antwortübersicht anzeigen';
+  resultWrap.classList.add('hidden');
+  testWrap.classList.remove('hidden');
+  renderQuestion();
+});
+
+reviewBtn.addEventListener('click', () => {
+  const hidden = reviewWrap.classList.contains('hidden');
+  if (hidden) {
+    renderReview();
+    reviewWrap.classList.remove('hidden');
+    reviewBtn.textContent = 'Antwortübersicht ausblenden';
+  } else {
+    reviewWrap.classList.add('hidden');
+    reviewBtn.textContent = 'Antwortübersicht anzeigen';
+  }
+});
+
+speakBtn.addEventListener('click', speakCurrentQuestion);
+stopSpeakBtn.addEventListener('click', () => window.speechSynthesis.cancel());
+</script>
+</body>
+</html>
