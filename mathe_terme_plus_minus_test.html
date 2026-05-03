@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mathe-Test: Terme mit Plus und Minus</title>
+  <style>
+    :root{
+      --bg:#10131c;
+      --card:#171c29;
+      --card2:#1f2636;
+      --text:#f4f7fb;
+      --muted:#aab4c3;
+      --accent:#6ee7b7;
+      --accent2:#93c5fd;
+      --bad:#fb7185;
+      --warn:#fbbf24;
+      --ok:#34d399;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(147,197,253,.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(110,231,183,.14), transparent 35%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:18px;
+    }
+    .app{width:100%;max-width:900px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    header{
+      padding:24px 24px 18px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.035);
+    }
+    h1{margin:0 0 8px;font-size:clamp(1.55rem, 4vw, 2.3rem);line-height:1.08}
+    .sub{color:var(--muted);font-size:1rem;line-height:1.45;margin:0}
+    main{padding:22px}
+    .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 0}
+    .pill{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      border-radius:999px;
+      padding:8px 12px;
+      color:#dbeafe;
+      font-size:.92rem;
+    }
+    .startgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+    .smallbox{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:18px;padding:16px}
+    .smallbox b{display:block;font-size:1.2rem;margin-bottom:4px;color:var(--accent)}
+    .smallbox span{color:var(--muted);font-size:.92rem}
+    button{
+      border:0;
+      border-radius:16px;
+      padding:13px 18px;
+      font-weight:800;
+      font-size:1rem;
+      cursor:pointer;
+      color:#08111f;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 10px 30px rgba(110,231,183,.18);
+    }
+    button.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border);box-shadow:none}
+    button.danger{background:rgba(251,113,133,.16);color:#fecdd3;border:1px solid rgba(251,113,133,.35);box-shadow:none}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+    .score{display:flex;gap:10px;flex-wrap:wrap}
+    .score span{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:999px;padding:8px 12px;color:#dce7f5}
+    .progresswrap{height:12px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;border:1px solid var(--border);margin:0 0 22px}
+    .progress{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s ease}
+    .questionbox{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:22px;padding:22px;margin-bottom:16px}
+    .qnum{color:var(--muted);font-weight:700;margin-bottom:10px}
+    .question{font-size:clamp(1.3rem,4.5vw,2.15rem);font-weight:850;line-height:1.25;margin:0 0 16px}
+    .term{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;color:#ffffff;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:14px;padding:4px 9px;white-space:nowrap}
+    .inputrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    input{
+      flex:1 1 240px;
+      min-width:160px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(7,10,18,.72);
+      color:var(--text);
+      padding:14px 16px;
+      font-size:1.18rem;
+      outline:none;
+    }
+    input:focus{border-color:rgba(110,231,183,.75);box-shadow:0 0 0 4px rgba(110,231,183,.12)}
+    .syntax{color:var(--muted);font-size:.92rem;margin-top:12px;line-height:1.35}
+    .feedback{border-radius:18px;padding:15px 16px;margin:14px 0 0;display:none;font-weight:750;line-height:1.4}
+    .feedback.ok{display:block;background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.35);color:#bbf7d0}
+    .feedback.bad{display:block;background:rgba(251,113,133,.14);border:1px solid rgba(251,113,133,.35);color:#fecdd3}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .hidden{display:none!important}
+    table{width:100%;border-collapse:collapse;margin-top:18px;overflow:hidden;border-radius:16px}
+    th,td{border-bottom:1px solid var(--border);padding:11px 10px;text-align:left;vertical-align:top}
+    th{color:#dbeafe;background:rgba(255,255,255,.07)}
+    td{color:#eef2ff}
+    tr.good td:first-child{color:#86efac;font-weight:800}
+    tr.wrong td:first-child{color:#fda4af;font-weight:800}
+    .resultbox{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:22px;padding:22px;margin-bottom:16px}
+    .bigscore{font-size:clamp(2.4rem,8vw,4rem);font-weight:900;line-height:1;margin:10px 0;color:var(--accent)}
+    .grade{font-size:1.15rem;color:#dbeafe;line-height:1.45;margin:0}
+    .footerNote{color:var(--muted);font-size:.9rem;margin-top:14px;line-height:1.35}
+    @media (max-width:720px){
+      body{padding:10px}
+      header,main{padding:18px}
+      .startgrid{grid-template-columns:1fr}
+      .inputrow button{width:100%}
+      input{width:100%}
+      table{font-size:.86rem}
+      th:nth-child(3),td:nth-child(3){display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="app card">
+    <header>
+      <h1>Mathe-Abfrage: Terme mit Plus und Minus</h1>
+      <p class="sub">Ein reiner Übungstest zum Zusammenfassen von Termen. Keine Tipps während der Aufgabe, keine Ausreden, keine pädagogische Watte. Nur rechnen.</p>
+      <div class="pillrow">
+        <div class="pill">Klasse 7</div>
+        <div class="pill">Plus und Minus</div>
+        <div class="pill">Terme vereinfachen</div>
+        <div class="pill">20 Punkte</div>
+      </div>
+    </header>
+
+    <main>
+      <section id="startScreen">
+        <div class="startgrid">
+          <div class="smallbox"><b>20</b><span>zufällige Aufgaben pro Runde</span></div>
+          <div class="smallbox"><b>1 Punkt</b><span>pro richtig gelöster Aufgabe</span></div>
+          <div class="smallbox"><b>frei</b><span>Antworten per Eingabefeld statt Ankreuzen</span></div>
+        </div>
+        <p class="syntax">Eingabe-Beispiele: <span class="term">7x</span>, <span class="term">5x + 3</span>, <span class="term">2x + 4y</span>, <span class="term">-3a</span>, <span class="term">0</span>. Die Reihenfolge ist egal: <span class="term">4 + 3x</span> wird wie <span class="term">3x + 4</span> erkannt.</p>
+        <div class="controls">
+          <button onclick="startGame()">Test starten</button>
+          <button class="secondary" onclick="startGame(true)">Schwere Mischung starten</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="hidden">
+        <div class="topbar">
+          <div class="score">
+            <span id="roundInfo">Aufgabe 1 / 20</span>
+            <span id="scoreInfo">Punkte: 0</span>
+          </div>
+          <button class="danger" onclick="restart()">Neu starten</button>
+        </div>
+        <div class="progresswrap"><div id="progress" class="progress"></div></div>
+
+        <div class="questionbox">
+          <div id="qnum" class="qnum">Aufgabe 1</div>
+          <p id="question" class="question"></p>
+          <div class="inputrow">
+            <input id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Antwort eingeben, z.B. 5x + 2">
+            <button id="checkBtn" onclick="checkAnswer()">Prüfen</button>
+          </div>
+          <div id="feedback" class="feedback"></div>
+          <p class="syntax">Nur zusammenfassen, keine Gleichung daraus machen. Also nicht <span class="term">= 7x</span> schreiben. Das wäre wieder so ein kleiner Menschheitsrückschritt.</p>
+        </div>
+
+        <div class="controls">
+          <button id="nextBtn" onclick="nextQuestion()" disabled>Nächste Aufgabe</button>
+        </div>
+      </section>
+
+      <section id="resultScreen" class="hidden">
+        <div class="resultbox">
+          <div>Endergebnis</div>
+          <div id="bigScore" class="bigscore">0 / 20</div>
+          <p id="gradeText" class="grade"></p>
+          <div class="controls">
+            <button onclick="startGame()">Neue Runde</button>
+            <button class="secondary" onclick="print()">Ergebnis drucken</button>
+          </div>
+        </div>
+        <div class="resultbox">
+          <h2 style="margin-top:0">Auswertung</h2>
+          <table>
+            <thead>
+              <tr><th>Status</th><th>Aufgabe</th><th>Deine Antwort</th><th>Richtig</th></tr>
+            </thead>
+            <tbody id="resultTable"></tbody>
+          </table>
+          <p class="footerNote">Hinweis: Die App erkennt gleichwertige Terme, zum Beispiel <span class="term">2x + 4y</span> und <span class="term">4y + 2x</span>. Bei falsch geschriebenen Eingaben meckert sie, wie Mathe es eben tut.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+const allQuestions = [
+  {q:'Fasse zusammen: <span class="term">3x + 4x</span>', expected:'7x', level:1},
+  {q:'Fasse zusammen: <span class="term">8a - 2a</span>', expected:'6a', level:1},
+  {q:'Fasse zusammen: <span class="term">5y + y</span>', expected:'6y', level:1},
+  {q:'Fasse zusammen: <span class="term">10b - b</span>', expected:'9b', level:1},
+  {q:'Fasse zusammen: <span class="term">7x - 7x</span>', expected:'0', level:1},
+  {q:'Fasse zusammen: <span class="term">x + x + x</span>', expected:'3x', level:1},
+  {q:'Fasse zusammen: <span class="term">9m - 4m</span>', expected:'5m', level:1},
+  {q:'Fasse zusammen: <span class="term">2n + 6n - n</span>', expected:'7n', level:1},
+
+  {q:'Fasse zusammen: <span class="term">3x + 5 + 2x</span>', expected:'5x + 5', level:2},
+  {q:'Fasse zusammen: <span class="term">4a + 7 - a</span>', expected:'3a + 7', level:2},
+  {q:'Fasse zusammen: <span class="term">8x - 3 + 2x</span>', expected:'10x - 3', level:2},
+  {q:'Fasse zusammen: <span class="term">6y + 4 - 2y + 1</span>', expected:'4y + 5', level:2},
+  {q:'Fasse zusammen: <span class="term">9a - 5 + a - 3</span>', expected:'10a - 8', level:2},
+  {q:'Fasse zusammen: <span class="term">10 - 3x + 2 - 4x</span>', expected:'-7x + 12', level:2},
+  {q:'Fasse zusammen: <span class="term">-x + 7 + 3x - 2</span>', expected:'2x + 5', level:2},
+  {q:'Fasse zusammen: <span class="term">a - a + 5</span>', expected:'5', level:2},
+  {q:'Fasse zusammen: <span class="term">12b - 4b + 2 - b</span>', expected:'7b + 2', level:2},
+
+  {q:'Fasse zusammen: <span class="term">3x - 5x</span>', expected:'-2x', level:3},
+  {q:'Fasse zusammen: <span class="term">2a - 7a</span>', expected:'-5a', level:3},
+  {q:'Fasse zusammen: <span class="term">y - 4y</span>', expected:'-3y', level:3},
+  {q:'Fasse zusammen: <span class="term">5b - 9b</span>', expected:'-4b', level:3},
+  {q:'Fasse zusammen: <span class="term">x - 6x</span>', expected:'-5x', level:3},
+  {q:'Fasse zusammen: <span class="term">5a + 3 - 8a + 4</span>', expected:'-3a + 7', level:3},
+  {q:'Fasse zusammen: <span class="term">6y - 2 - y + 10</span>', expected:'5y + 8', level:3},
+
+  {q:'Fasse zusammen, soweit es geht: <span class="term">3x + 2y + 4x</span>', expected:'7x + 2y', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">5a + 3b - 2a</span>', expected:'3a + 3b', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">7x - 2y - 3x</span>', expected:'4x - 2y', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">4m + 2n - m + n</span>', expected:'3m + 3n', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">8a - 3b + 2a + b</span>', expected:'10a - 2b', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">3x + 4</span>', expected:'3x + 4', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">2a + 3b</span>', expected:'2a + 3b', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">x + x + x - x</span>', expected:'2x', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">4x + 3y - 2x + y</span>', expected:'2x + 4y', level:4},
+  {q:'Fasse zusammen, soweit es geht: <span class="term">9a - 2b - 4a + 5b</span>', expected:'5a + 3b', level:4}
+];
+
+let questions = [];
+let current = 0;
+let score = 0;
+let checked = false;
+let results = [];
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startGame(hard=false){
+  const pool = hard ? allQuestions.filter(x=>x.level>=2) : allQuestions;
+  questions = shuffle(pool).slice(0,20);
+  current = 0;
+  score = 0;
+  checked = false;
+  results = [];
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  showQuestion();
+}
+
+function restart(){
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('hidden');
+}
+
+function showQuestion(){
+  checked = false;
+  const item = questions[current];
+  document.getElementById('roundInfo').textContent = `Aufgabe ${current+1} / ${questions.length}`;
+  document.getElementById('scoreInfo').textContent = `Punkte: ${score}`;
+  document.getElementById('qnum').textContent = `Aufgabe ${current+1}`;
+  document.getElementById('question').innerHTML = item.q;
+  document.getElementById('answerInput').value = '';
+  document.getElementById('answerInput').disabled = false;
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('nextBtn').disabled = true;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+  document.getElementById('progress').style.width = `${(current/questions.length)*100}%`;
+  setTimeout(()=>document.getElementById('answerInput').focus(),50);
+}
+
+function normalizeInput(s){
+  return String(s || '')
+    .toLowerCase()
+    .replace(/−/g,'-')
+    .replace(/–/g,'-')
+    .replace(/—/g,'-')
+    .replace(/·/g,'')
+    .replace(/\*/g,'')
+    .replace(/,/g,'.')
+    .replace(/\s+/g,'');
+}
+
+function parseTerm(str){
+  let s = normalizeInput(str);
+  if(!s) return null;
+  if(s.startsWith('=')) s = s.slice(1);
+  if(!s) return null;
+  if(!/^[+-]/.test(s)) s = '+' + s;
+
+  const map = {c:0};
+  let pos = 0;
+  const re = /([+-])([^+-]+)/g;
+  let m;
+  while((m = re.exec(s)) !== null){
+    if(m.index !== pos) return null;
+    pos = re.lastIndex;
+    const sign = m[1] === '-' ? -1 : 1;
+    const body = m[2];
+    if(!body) return null;
+
+    let numMatch = body.match(/^\d+(?:\.\d+)?$/);
+    if(numMatch){
+      map.c += sign * parseFloat(body);
+      continue;
+    }
+
+    let varMatch = body.match(/^(\d+(?:\.\d+)?)?([a-z])$/);
+    if(varMatch){
+      const coeff = varMatch[1] === undefined ? 1 : parseFloat(varMatch[1]);
+      const v = varMatch[2];
+      map[v] = (map[v] || 0) + sign * coeff;
+      continue;
+    }
+    return null;
+  }
+  if(pos !== s.length) return null;
+
+  for(const k of Object.keys(map)){
+    if(Math.abs(map[k]) < 1e-9) delete map[k];
+  }
+  if(Object.keys(map).length === 0) map.c = 0;
+  if(map.c === undefined) map.c = 0;
+  if(Math.abs(map.c) < 1e-9) delete map.c;
+  return map;
+}
+
+function equivalent(a,b){
+  const pa = parseTerm(a);
+  const pb = parseTerm(b);
+  if(!pa || !pb) return false;
+  const keys = new Set([...Object.keys(pa), ...Object.keys(pb)]);
+  for(const k of keys){
+    const va = pa[k] || 0;
+    const vb = pb[k] || 0;
+    if(Math.abs(va-vb) > 1e-9) return false;
+  }
+  return true;
+}
+
+function checkAnswer(){
+  if(checked) return;
+  const answer = document.getElementById('answerInput').value.trim();
+  const expected = questions[current].expected;
+  const fb = document.getElementById('feedback');
+
+  if(!answer){
+    fb.className = 'feedback bad';
+    fb.textContent = 'Da steht noch nichts. Selbst Mathe braucht wenigstens einen Versuch.';
+    return;
+  }
+
+  const parsed = parseTerm(answer);
+  if(!parsed){
+    fb.className = 'feedback bad';
+    fb.textContent = 'Die Eingabe wurde nicht als Term erkannt. Beispiel: 5x + 3 oder -2a.';
+    return;
+  }
+
+  const ok = equivalent(answer, expected);
+  checked = true;
+  document.getElementById('answerInput').disabled = true;
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').disabled = false;
+
+  if(ok){
+    score++;
+    fb.className = 'feedback ok';
+    fb.textContent = `Richtig. Ergebnis: ${expected}`;
+  } else {
+    fb.className = 'feedback bad';
+    fb.textContent = `Falsch. Richtig wäre: ${expected}`;
+  }
+  results.push({ok, q:stripHtml(questions[current].q), answer, expected});
+  document.getElementById('scoreInfo').textContent = `Punkte: ${score}`;
+  document.getElementById('progress').style.width = `${((current+1)/questions.length)*100}%`;
+}
+
+function stripHtml(html){
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+}
+
+function nextQuestion(){
+  if(!checked) return;
+  current++;
+  if(current >= questions.length){
+    endGame();
+  } else {
+    showQuestion();
+  }
+}
+
+function endGame(){
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+  document.getElementById('bigScore').textContent = `${score} / ${questions.length}`;
+  const percent = Math.round(score/questions.length*100);
+  let text = '';
+  if(percent >= 90) text = `Sehr sicher: ${percent} %. Plus und Minus bei Termen sitzen ordentlich.`;
+  else if(percent >= 75) text = `Gut: ${percent} %. Ein paar Vorzeichen und ungleiche Terme noch sauberer trennen.`;
+  else if(percent >= 60) text = `Mittel: ${percent} %. Grundlagen sind da, aber die Minuszeichen lauern noch wie kleine mathematische Wegelagerer.`;
+  else text = `Noch unsicher: ${percent} %. Erst einfache x-Terme üben, dann Zahlen und verschiedene Variablen dazunehmen.`;
+  document.getElementById('gradeText').textContent = text;
+
+  const tbody = document.getElementById('resultTable');
+  tbody.innerHTML = '';
+  results.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.className = r.ok ? 'good' : 'wrong';
+    tr.innerHTML = `<td>${r.ok ? '✓' : '✗'}</td><td>${escapeHtml(r.q)}</td><td>${escapeHtml(r.answer)}</td><td>${escapeHtml(r.expected)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+document.getElementById('answerInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){
+    if(!checked) checkAnswer();
+    else nextQuestion();
+  }
+});
+</script>
+</body>
+</html>
