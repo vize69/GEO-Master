@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ═══════════════════════════════════════════════════════════════
+     SCHRITT 1: Titel des Tests hier eintragen
+     ═══════════════════════════════════════════════════════════════ -->
+<title>TESTNAME HIER</title>
+<style>
+:root{
+  --bg:#eef3fb; --card:#ffffff; --text:#17212f; --muted:#667489;
+  --border:#d7e2f0; --primary:#2563eb; --primary-dark:#1d4ed8;
+  --success:#15803d; --warning:#b45309; --danger:#dc2626;
+  --success-bg:#ecfdf3; --success-text:#14532d; --success-border:#9ee2b1;
+  --error-bg:#fff1f1; --error-text:#7f1d1d; --error-border:#f4b2b2;
+  --shadow:0 10px 30px rgba(16,24,40,.08); --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f8fbff 0%,var(--bg) 100%);color:var(--text)}
+.wrap{max-width:1000px;margin:0 auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin:14px 0}
+h1,h2,h3{margin:0 0 12px} p{line-height:1.6}.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.stat,.module,.box{background:#f8fbff;border:1px solid var(--border);border-radius:14px;padding:16px}
+.stat .label{font-size:13px;color:var(--muted);margin-bottom:6px}.stat .value{font-size:24px;font-weight:bold}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:14px}
+.btn{border:none;border-radius:14px;padding:13px 16px;font-size:16px;cursor:pointer;transition:transform .08s ease,opacity .2s ease,background .2s ease}
+.btn:hover{transform:translateY(-1px)} .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+.btn-secondary{background:#eef4ff;color:#1f3f99}.btn-success{background:var(--success);color:#fff}
+.btn-warning{background:var(--warning);color:#fff}.btn-ghost{background:#f3f6fa;color:#203040}
+.hidden{display:none}.meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted);font-size:15px}
+.progress{height:16px;background:#e8eef7;border-radius:999px;overflow:hidden;border:1px solid #dce4f0;margin:10px 0 16px}
+.bar{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--success));transition:width .25s ease}
+.question{font-size:26px;line-height:1.35;margin:10px 0 14px}
+.hint{font-size:14px;color:var(--muted);margin-bottom:12px}.answer-list{display:grid;gap:10px}
+.answer{display:block;width:100%;text-align:left;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.45;cursor:pointer}
+.answer.selected{outline:2px solid #a8c4ff;background:#f8fbff}
+.answer.correct{background:var(--success-bg);border-color:var(--success-border)}
+.answer.wrong{background:var(--error-bg);border-color:var(--error-border)}
+.notice{display:none;margin-top:14px;border-radius:14px;padding:16px 18px;line-height:1.65}
+.notice.show{display:block}
+.notice-success{background:var(--success-bg);border:1px solid var(--success-border);color:var(--success-text)}
+.notice-error{background:var(--error-bg);border:1px solid var(--error-border);color:var(--error-text)}
+.notice .block-title{font-weight:bold;margin-top:10px}
+.notice strong,.notice ul,.notice li,.notice .block-title{color:inherit}
+.modeBox{border:1px dashed #c8d8ef;background:#f8fbff;border-radius:14px;padding:12px 14px;margin-bottom:12px;color:#31518d;font-size:15px}
+.small{font-size:13px;color:var(--muted)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.badge{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:8px 12px;border-radius:12px;font-size:14px}
+svg.chart{width:100%;height:140px;display:block}
+.footer-note{text-align:center;color:var(--muted);margin-top:8px;font-size:13px}
+@media(max-width:600px){.question{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Startbildschirm: wird automatisch aus den Fragen aufgebaut -->
+<section id="homeScreen" class="card">
+  <!-- ═══════════════════════════════════════════════════════════════
+       SCHRITT 2: Überschrift und Beschreibung anpassen
+       ═══════════════════════════════════════════════════════════════ -->
+  <h1>📚 TESTNAME HIER</h1>
+  <p class="muted">Kurze Beschreibung: Klasse, Fach, Thema — z.B. „Klassenarbeitsvorbereitung Geschichte Klasse 6, Thema: Römisches Reich."</p>
+
+  <div class="grid">
+    <div class="stat"><div class="label">Fragenpool</div><div class="value" id="poolCount">0</div></div>
+    <div class="stat"><div class="label">Themen</div><div class="value" id="moduleCount">0</div></div>
+    <div class="stat"><div class="label">Modi</div><div class="value">2</div></div>
+    <div class="stat"><div class="label">Zielnote</div><div class="value">2–3</div></div>
+  </div>
+
+  <!-- Modul-Karten werden automatisch hier eingefügt -->
+  <div class="module-grid" id="moduleCards" style="margin-top:14px"></div>
+
+  <div class="module-grid" style="margin-top:0">
+    <div class="module">
+      <h3>Alle Themen gemischt</h3>
+      <p class="muted">Alle Fragen in einem großen Durchlauf. Am Ende gibt es eine Note.</p>
+      <button class="btn btn-warning" onclick="startModule('Alle','exam')">Große Prüfung</button>
+      <button class="btn btn-success" onclick="startModule('Alle','learn')" style="margin-left:8px">Trainingslager</button>
+    </div>
+    <div class="module">
+      <h3>Fortschritt</h3>
+      <p class="muted">Lernstände und Badges, die der Browser speichert.</p>
+      <button class="btn btn-secondary" onclick="showScreen('progressScreen')">Fortschritt</button>
+    </div>
+  </div>
+</section>
+
+<!-- Quiz-Bildschirm: unveränderlich -->
+<section id="quizScreen" class="card hidden">
+  <div class="toolbar">
+    <div>
+      <h2 id="roundTitle">Modul</h2>
+      <div class="meta">
+        <span><strong id="counter">Frage 1 / 10</strong></span>
+        <span>•</span><span id="topicLabel">Thema</span>
+        <span>•</span><span id="modeLabel">Modus</span>
+        <span>•</span><span><strong id="scoreLabel">0 Punkte</strong></span>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="modeBox" id="modeBox"></div>
+  <div class="question" id="questionText"></div>
+  <div class="hint" id="hintText"></div>
+  <div class="answer-list" id="answers"></div>
+  <div class="toolbar">
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-secondary" id="checkBtn">Antwort prüfen</button>
+      <button class="btn btn-ghost" id="hintBtn">Tipp</button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="showScreen('homeScreen')">Zum Start</button>
+      <button class="btn btn-success" id="nextBtn" disabled>Nächste Frage</button>
+    </div>
+  </div>
+  <div class="notice" id="noticeBox"></div>
+</section>
+
+<!-- Ergebnis-Bildschirm: unveränderlich -->
+<section id="resultScreen" class="card hidden">
+  <h2>🏁 Auswertung</h2>
+  <p id="resultHeadline" style="font-size:28px;font-weight:bold;margin:8px 0 10px">0 Punkte</p>
+  <p id="resultText"></p>
+  <div class="grid">
+    <div class="stat"><div class="label">Thema</div><div class="value" id="resultModule">-</div></div>
+    <div class="stat"><div class="label">Modus</div><div class="value" id="resultMode">-</div></div>
+    <div class="stat"><div class="label">Quote</div><div class="value" id="percentScore">0 %</div></div>
+    <div class="stat"><div class="label">Note</div><div class="value" id="gradeScore">-</div></div>
+    <div class="stat"><div class="label">Richtig</div><div class="value" id="rightCount">0</div></div>
+    <div class="stat"><div class="label">Falsch</div><div class="value" id="wrongCount">0</div></div>
+  </div>
+  <div class="module-grid">
+    <div class="box"><h3>Lernkurve</h3><svg class="chart" id="sessionChart" viewBox="0 0 400 140" preserveAspectRatio="none"></svg></div>
+    <div class="box"><h3>Themen-Profil</h3><svg class="chart" id="topicChart" viewBox="0 0 400 140" preserveAspectRatio="none"></svg></div>
+  </div>
+  <div class="module-grid">
+    <div class="box"><h3>Wiederholen</h3><ul id="adviceList"><li>Nochmal durchgehen.</li></ul></div>
+    <div class="box"><h3>Badges</h3><div class="badges" id="badgeList"></div></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn btn-ghost" onclick="showScreen('homeScreen')">Zum Start</button>
+    <button class="btn btn-primary" id="retryBtn">Nochmal</button>
+    <button class="btn btn-secondary" onclick="showScreen('progressScreen')">Fortschritt</button>
+  </div>
+</section>
+
+<!-- Fortschritt-Bildschirm: unveränderlich -->
+<section id="progressScreen" class="card hidden">
+  <h2>📊 Fortschritt</h2>
+  <p class="muted">Wird lokal im Browser gespeichert – kein Konto nötig.</p>
+  <div class="grid">
+    <div class="stat"><div class="label">Sitzungen</div><div class="value" id="totalSessions">0</div></div>
+    <div class="stat"><div class="label">Beste Note</div><div class="value" id="bestGrade">-</div></div>
+    <div class="stat"><div class="label">Letzte Note</div><div class="value" id="lastGrade">-</div></div>
+    <div class="stat"><div class="label">Badges</div><div class="value" id="badgeCount">0</div></div>
+  </div>
+  <div class="module-grid">
+    <div class="box"><h3>Gesamt-Lernkurve</h3><svg class="chart" id="overallChart" viewBox="0 0 400 140" preserveAspectRatio="none"></svg></div>
+    <div class="box"><h3>Badges</h3><div class="badges" id="overallBadges"></div></div>
+  </div>
+  <div class="module-grid">
+    <div class="box">
+      <h3>Export</h3>
+      <button class="btn btn-secondary" onclick="exportData()">Export erzeugen</button>
+      <textarea id="exportBox" style="width:100%;min-height:100px;margin-top:10px;border:1px solid var(--border);border-radius:12px;padding:10px;font-family:monospace" placeholder="Hier erscheint der Export…"></textarea>
+    </div>
+    <div class="box">
+      <h3>Import / Reset</h3>
+      <textarea id="importBox" style="width:100%;min-height:100px;margin-bottom:10px;border:1px solid var(--border);border-radius:12px;padding:10px;font-family:monospace" placeholder="Export hier einfügen…"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="importData()">Importieren</button>
+        <button class="btn btn-ghost" onclick="clearData()">Zurücksetzen</button>
+        <button class="btn btn-ghost" onclick="showScreen('homeScreen')">Zum Start</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer-note" id="footerNote">Lerntrainer</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SCHRITT 3: FRAGEN EINTRAGEN
+
+     Jede Frage ist ein JSON-Objekt mit diesen Feldern:
+
+     "id"          → eindeutige Kennung, z.B. "R001", "M001", "H001"
+     "module"      → Themenblock, z.B. "Römisches Reich" oder "Brüche"
+     "topic"       → Unterthema, z.B. "Gesellschaft" oder "Kürzen"
+     "type"        → "single" (eine richtige Antwort)
+                     "multi"  (mehrere richtige Antworten)
+     "prompt"      → die Frage als Text
+     "options"     → Liste mit 3–4 Antwortmöglichkeiten
+     "correct"     → Index der richtigen Antwort(en), NULLBASIERT
+                     [0] = erste Antwort richtig
+                     [1,2] = zweite und dritte richtig (bei multi)
+     "explanation" → Erklärung, die nach der Antwort erscheint
+     "hint"        → kurzer Tipp für den Tipp-Button
+
+     WICHTIG: Komma zwischen den Fragen, kein Komma nach der letzten!
+     ════════════════════════════════════════════════════════════════════════ -->
+<script id="question-bank" type="application/json">
+[
+  {
+    "id": "B001",
+    "module": "Beispiel-Thema 1",
+    "topic": "Grundlagen",
+    "type": "single",
+    "prompt": "Was ist 2 + 2?",
+    "options": ["3", "4", "5", "6"],
+    "correct": [1],
+    "explanation": "2 + 2 = 4. Das ist eine grundlegende Rechenaufgabe.",
+    "hint": "Zähl an den Fingern."
+  },
+  {
+    "id": "B002",
+    "module": "Beispiel-Thema 1",
+    "topic": "Grundlagen",
+    "type": "single",
+    "prompt": "Wie viele Seiten hat ein Dreieck?",
+    "options": ["2", "3", "4", "5"],
+    "correct": [1],
+    "explanation": "Ein Dreieck hat genau 3 Seiten – daher der Name.",
+    "hint": "Tri = drei (Latein/Griechisch)."
+  },
+  {
+    "id": "B003",
+    "module": "Beispiel-Thema 2",
+    "topic": "Fortgeschritten",
+    "type": "multi",
+    "prompt": "Welche dieser Zahlen sind gerade?",
+    "options": ["2", "3", "4", "7"],
+    "correct": [0, 2],
+    "explanation": "Gerade Zahlen sind durch 2 teilbar: 2 und 4.",
+    "hint": "Durch 2 teilbar = gerade."
+  }
+]
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SCHRITT 4 (optional): Storage-Key anpassen
+     Ändere "vorlage_v1" in einen eindeutigen Namen für diesen Test,
+     damit verschiedene Tests nicht dieselben Browser-Daten nutzen.
+     Zum Beispiel: "roemisches_reich_v1" oder "brueche_klasse6_v1"
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+const STORAGE_KEY = 'vorlage_v1';
+
+const GRADE_MAP = [
+  {min:95, grade:1}, {min:80, grade:2}, {min:67, grade:3},
+  {min:50, grade:4}, {min:30, grade:5}, {min:0,  grade:6}
+];
+
+const QUESTIONS = JSON.parse(document.getElementById('question-bank').textContent);
+const MODULES   = [...new Set(QUESTIONS.map(q => q.module))];
+
+const state = {
+  module:'Alle', mode:'learn', questions:[], queue:[], currentIndex:0,
+  score:0, right:0, wrong:0, answered:false, selected:new Set(),
+  wrongQuestions:[], sessionSeries:[], topicScores:{}, hintUsed:false
+};
+
+/* ── Startbildschirm automatisch aufbauen ── */
+(function buildHome(){
+  document.getElementById('poolCount').textContent  = QUESTIONS.length;
+  document.getElementById('moduleCount').textContent = MODULES.length;
+  document.getElementById('footerNote').textContent  = document.title;
+  const grid = document.getElementById('moduleCards');
+  MODULES.forEach(mod => {
+    const count = QUESTIONS.filter(q => q.module === mod).length;
+    const card  = document.createElement('div');
+    card.className = 'module';
+    card.innerHTML = `<h3>${mod}</h3>
+      <p class="muted">${count} Fragen</p>
+      <button class="btn btn-primary" onclick="startModule('${mod}','learn')">Lernen</button>
+      <button class="btn btn-secondary" onclick="startModule('${mod}','exam')" style="margin-left:8px">Prüfen</button>`;
+    grid.appendChild(card);
+  });
+})();
+
+/* ── Hilfsfunktionen ── */
+function defaultStore(){ return {sessions:[], badges:[], totals:{seen:0,right:0}, mastery:{}}; }
+function getStore(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultStore(); } catch(e){ return defaultStore(); } }
+function saveStore(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+function showScreen(id){
+  ['homeScreen','quizScreen','resultScreen','progressScreen'].forEach(x => document.getElementById(x).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(id === 'progressScreen') renderProgress();
+}
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function sameSet(a,b){ if(a.length!==b.length) return false; const s=new Set(a); for(const x of b) if(!s.has(x)) return false; return true; }
+
+function pickQuestions(module, mode){
+  let list = QUESTIONS.filter(q => module==='Alle' ? true : q.module===module);
+  const max = module==='Alle' ? Math.min(30, list.length) : Math.min(15, list.length);
+  if(mode==='exam') return shuffle(list).slice(0, max);
+  const store = getStore();
+  list = shuffle(list);
+  list.sort((a,b) => (store.mastery[b.topic]?.wrong||0) - (store.mastery[a.topic]?.wrong||0));
+  return list.slice(0, max);
+}
+
+function startModule(module, mode){
+  state.module=module; state.mode=mode;
+  state.questions=pickQuestions(module, mode);
+  state.queue=[]; state.currentIndex=0; state.score=0;
+  state.right=0; state.wrong=0; state.answered=false;
+  state.selected=new Set(); state.wrongQuestions=[];
+  state.sessionSeries=[]; state.topicScores={};
+  renderQuestion();
+  showScreen('quizScreen');
+}
+
+function currentQuestion(){
+  return (state.queue.length>0 && state.currentIndex>=state.questions.length)
+    ? state.queue[0] : state.questions[state.currentIndex];
+}
+function totalCount(){ return state.questions.length + state.queue.length; }
+
+function renderQuestion(){
+  const q = currentQuestion();
+  state.answered=false; state.selected=new Set(); state.hintUsed=false;
+  const notice = document.getElementById('noticeBox');
+  notice.className = 'notice'; notice.innerHTML = '';
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('roundTitle').textContent =
+    state.module==='Alle' ? (state.mode==='exam' ? 'Große Prüfung' : 'Trainingslager') : state.module;
+  document.getElementById('counter').textContent = `Frage ${Math.min(state.currentIndex+1, totalCount())} / ${totalCount()}`;
+  document.getElementById('topicLabel').textContent = q.topic;
+  document.getElementById('modeLabel').textContent  = state.mode==='learn' ? 'Lernmodus' : 'Prüfungsmodus';
+  document.getElementById('scoreLabel').textContent = `${state.score} Punkte`;
+  document.getElementById('bar').style.width = `${(Math.min(state.currentIndex, totalCount()) / Math.max(1, totalCount()))*100}%`;
+  document.getElementById('modeBox').textContent = state.mode==='learn'
+    ? 'Lernmodus: Sofortige Erklärung nach jeder Frage, falsche Fragen kommen nochmal.'
+    : 'Prüfungsmodus: Erst alle Fragen beantworten, Auswertung kommt am Ende.';
+  document.getElementById('questionText').textContent = q.prompt;
+  document.getElementById('hintText').textContent = q.type==='multi'
+    ? 'Mehrfachantwort: Genau die richtige Kombination auswählen.'
+    : 'Einfachantwort: Genau eine Antwort ist richtig.';
+  const box = document.getElementById('answers'); box.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => toggleAnswer(idx, btn, q.type));
+    box.appendChild(btn);
+  });
+}
+
+function toggleAnswer(index, btn, type){
+  if(state.answered) return;
+  const answerEls = [...document.querySelectorAll('.answer')];
+  if(type==='single'){
+    state.selected = new Set([index]);
+    answerEls.forEach(el => el.classList.remove('selected'));
+    btn.classList.add('selected');
+  } else {
+    if(state.selected.has(index)){ state.selected.delete(index); btn.classList.remove('selected'); }
+    else { state.selected.add(index); btn.classList.add('selected'); }
+  }
+}
+
+function showHint(){
+  if(state.hintUsed) return;
+  state.hintUsed = true;
+  const q = currentQuestion();
+  const notice = document.getElementById('noticeBox');
+  notice.className = 'notice notice-success show';
+  notice.innerHTML = `<strong>Tipp:</strong><br>${q.hint || 'Lies die Frage nochmal genau durch.'}`;
+}
+
+function scoreMultiPartial(selected, correct){
+  let pts = 0;
+  selected.forEach(x => { if(correct.includes(x)) pts += 4; else pts -= 2; });
+  return Math.max(0, Math.min(10, pts));
+}
+
+function updateMastery(q, isRight){
+  const store = getStore();
+  if(!store.mastery[q.topic]) store.mastery[q.topic] = {seen:0, right:0, wrong:0};
+  store.mastery[q.topic].seen++;
+  if(isRight) store.mastery[q.topic].right++; else store.mastery[q.topic].wrong++;
+  store.totals.seen++;
+  if(isRight) store.totals.right++;
+  saveStore(store);
+}
+
+function checkAnswer(){
+  if(state.answered) return;
+  const q = currentQuestion();
+  if(state.selected.size===0){
+    const notice = document.getElementById('noticeBox');
+    notice.className = 'notice notice-error show';
+    notice.innerHTML = '<strong>Noch nichts ausgewählt.</strong><br>Erst eine Antwort markieren, dann prüfen.';
+    return;
+  }
+  state.answered = true;
+  const selected = [...state.selected].sort((a,b)=>a-b);
+  const correct  = [...q.correct].sort((a,b)=>a-b);
+  const exact    = sameSet(selected, correct);
+  const buttons  = [...document.querySelectorAll('.answer')];
+  buttons.forEach((btn, idx) => {
+    btn.disabled = true;
+    if(state.mode==='learn'){
+      if(correct.includes(idx))                          btn.classList.add('correct');
+      if(state.selected.has(idx) && !correct.includes(idx)) btn.classList.add('wrong');
+    }
+  });
+  let earned = 0, isRight = false;
+  if(q.type==='single'){ earned = exact ? 10 : 0; isRight = exact; }
+  else { earned = state.mode==='learn' ? scoreMultiPartial(selected, correct) : (exact ? 10 : 0); isRight = exact; }
+  state.score += earned;
+  if(isRight) state.right++;
+  else {
+    state.wrong++;
+    state.wrongQuestions.push(q);
+    if(state.mode==='learn') state.queue.push(q);
+  }
+  if(!state.topicScores[q.topic]) state.topicScores[q.topic] = {right:0, seen:0};
+  state.topicScores[q.topic].seen++;
+  if(isRight) state.topicScores[q.topic].right++;
+  state.sessionSeries.push(Math.round((state.score / Math.max(1, (state.sessionSeries.length+1)*10))*100));
+  updateMastery(q, isRight);
+  const notice = document.getElementById('noticeBox');
+  if(state.mode==='learn'){
+    if(isRight){
+      notice.className = 'notice notice-success show';
+      notice.innerHTML = `<strong>Richtig! +${earned} Punkte</strong><br>${q.explanation}`;
+    } else {
+      const correctList = correct.map(i=>`<li>${q.options[i]}</li>`).join('');
+      notice.className = 'notice notice-error show';
+      notice.innerHTML = `<strong>Leider falsch.</strong><br>${q.explanation}<div class="block-title">Richtig wäre gewesen:</div><ul>${correctList}</ul>`;
+    }
+  } else {
+    notice.className = 'notice notice-success show';
+    notice.innerHTML = '<strong>Antwort gespeichert.</strong><br>Die Auswertung kommt am Ende.';
+  }
+  document.getElementById('scoreLabel').textContent = `${state.score} Punkte`;
+  document.getElementById('bar').style.width = `${((state.currentIndex+1)/Math.max(1,totalCount()))*100}%`;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion(){
+  const inRepeat = (state.queue.length>0 && state.currentIndex>=state.questions.length);
+  if(inRepeat) state.queue.shift(); else state.currentIndex++;
+  if(state.currentIndex>=state.questions.length && state.queue.length===0) finishSession();
+  else renderQuestion();
+}
+
+function gradeFromPercent(p){ for(const g of GRADE_MAP) if(p>=g.min) return g.grade; return 6; }
+
+function awardBadges(percent, grade){
+  const store = getStore();
+  const add = (id, title) => { if(!store.badges.find(b=>b.id===id)) store.badges.push({id, title, at:new Date().toISOString()}); };
+  if(percent>=95) add('grade1','👑 Note 1 erreicht!');
+  if(percent>=80) add('grade2','🏅 Note 2 erreicht');
+  if(percent>=67) add('grade3','🥈 Note 3 erreicht');
+  if(store.sessions.length>=3) add('streak3','🔥 3 Sitzungen');
+  if(store.sessions.length>=10) add('streak10','💎 10 Sitzungen');
+  saveStore(store);
+}
+
+function drawLineChart(svgId, values, suffix){
+  const svg = document.getElementById(svgId);
+  const W=400, H=140, pad=18;
+  if(!values||values.length===0){ svg.innerHTML='<text x="20" y="40" fill="#66758c" font-size="14">Noch keine Daten</text>'; return; }
+  const pts = values.map((v,i)=>{ const x=pad+(i*((W-2*pad)/Math.max(1,values.length-1))); const y=H-pad-((v/100)*(H-2*pad)); return [x,y]; });
+  const d   = pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const grid = [0,25,50,75,100].map(v=>{ const y=H-pad-((v/100)*(H-2*pad)); return `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#e5e7eb"/><text x="2" y="${y+4}" font-size="10" fill="#94a3b8">${v}</text>`; }).join('');
+  const dots = pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#2563eb"/><text x="${p[0]}" y="${Math.max(14,p[1]-8)}" font-size="10" text-anchor="middle" fill="#66758c">${values[i]}${suffix}</text>`).join('');
+  svg.innerHTML = `${grid}<path d="${d}" fill="none" stroke="#2563eb" stroke-width="2.5"/>${dots}`;
+}
+
+function drawBarChart(svgId, pairs){
+  const svg = document.getElementById(svgId);
+  if(!pairs||pairs.length===0){ svg.innerHTML='<text x="20" y="40" fill="#66758c" font-size="14">Noch keine Daten</text>'; return; }
+  const left=110, barH=20, gap=10;
+  let inner='';
+  pairs.slice(0,5).forEach((p,idx)=>{
+    const y=14+idx*(barH+gap), val=Math.max(0,Math.min(100,p.value));
+    inner += `<text x="8" y="${y+14}" font-size="12" fill="#475569">${p.label}</text>`;
+    inner += `<rect x="${left}" y="${y}" width="250" height="${barH}" rx="6" fill="#e8eef7"/>`;
+    inner += `<rect x="${left}" y="${y}" width="${2.5*val}" height="${barH}" rx="6" fill="#2563eb"/>`;
+    inner += `<text x="${left+255}" y="${y+14}" font-size="12" fill="#475569">${val}%</text>`;
+  });
+  svg.innerHTML = inner;
+}
+
+function finishSession(){
+  const totalQ   = state.questions.length + (state.mode==='learn' ? state.wrongQuestions.length : 0);
+  const maxScore = totalQ * 10;
+  const percent  = Math.round((state.score / Math.max(1, maxScore)) * 100);
+  const grade    = gradeFromPercent(percent);
+  const store    = getStore();
+  store.sessions.push({at:new Date().toISOString(), module:state.module, mode:state.mode, percent, grade, score:state.score, maxScore, wrong:state.wrong});
+  saveStore(store);
+  awardBadges(percent, grade);
+  document.getElementById('resultHeadline').textContent = `${state.score} von ${maxScore} Punkten`;
+  document.getElementById('resultModule').textContent   = state.module;
+  document.getElementById('resultMode').textContent     = state.mode==='learn' ? 'Lernen' : 'Prüfung';
+  document.getElementById('percentScore').textContent   = `${percent} %`;
+  document.getElementById('gradeScore').textContent     = grade;
+  document.getElementById('rightCount').textContent     = state.right;
+  document.getElementById('wrongCount').textContent     = state.wrongQuestions.length;
+  const resultText = document.getElementById('resultText');
+  if(grade<=2)      resultText.innerHTML = '<strong>Sehr stark.</strong> Zielnote 2 oder besser erreicht!';
+  else if(grade<=3) resultText.innerHTML = '<strong>Gut.</strong> Zielnote 3 erreicht. Richtung 2 weiter üben.';
+  else if(grade===4) resultText.innerHTML = '<strong>Bestanden, aber knapp.</strong> Noch etwas üben.';
+  else              resultText.innerHTML = '<strong>Noch nicht genug.</strong> Nochmal durchgehen!';
+  const adviceList = document.getElementById('adviceList');
+  adviceList.innerHTML = '';
+  if(state.wrongQuestions.length===0){
+    adviceList.innerHTML += '<li>Kaum Fehler – jetzt den Prüfungsmodus ausprobieren!</li>';
+  } else {
+    const weak = {};
+    state.wrongQuestions.forEach(q => weak[q.topic] = (weak[q.topic]||0)+1);
+    Object.entries(weak).sort((a,b)=>b[1]-a[1]).forEach(([topic,count])=>{
+      adviceList.innerHTML += `<li><strong>${topic}</strong>: ${count} Fehler – gezielt wiederholen.</li>`;
+    });
+  }
+  const store2 = getStore();
+  document.getElementById('badgeList').innerHTML = store2.badges.slice(-6).map(b=>`<div class="badge">${b.title}</div>`).join('') || '<div class="small">Noch keine Badges</div>';
+  drawLineChart('sessionChart', state.sessionSeries, '%');
+  const topicPairs = Object.entries(state.topicScores).map(([label,obj])=>({label, value:Math.round((obj.right/Math.max(1,obj.seen))*100)}));
+  drawBarChart('topicChart', topicPairs);
+  document.getElementById('retryBtn').onclick = () => startModule(state.module, state.mode);
+  showScreen('resultScreen');
+}
+
+function renderProgress(){
+  const store = getStore();
+  document.getElementById('totalSessions').textContent = store.sessions.length;
+  const grades = store.sessions.map(s=>s.grade).filter(Boolean);
+  document.getElementById('bestGrade').textContent = grades.length ? Math.min(...grades) : '-';
+  document.getElementById('lastGrade').textContent = grades.length ? grades[grades.length-1] : '-';
+  document.getElementById('badgeCount').textContent = store.badges.length;
+  drawLineChart('overallChart', store.sessions.map(s=>s.percent), '%');
+  document.getElementById('overallBadges').innerHTML = store.badges.length
+    ? store.badges.map(b=>`<div class="badge">${b.title}</div>`).join('')
+    : '<div class="small">Noch keine Badges</div>';
+}
+
+function exportData(){ document.getElementById('exportBox').value = JSON.stringify(getStore(), null, 2); }
+function importData(){
+  const txt = document.getElementById('importBox').value.trim();
+  if(!txt) return alert('Bitte erst Exportdaten einfügen.');
+  try { saveStore(JSON.parse(txt)); renderProgress(); alert('Import erfolgreich.'); }
+  catch(e){ alert('Import fehlgeschlagen. JSON prüfen.'); }
+}
+function clearData(){
+  if(!confirm('Wirklich alle lokalen Lernstände löschen?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderProgress();
+  document.getElementById('exportBox').value = '';
+  document.getElementById('importBox').value = '';
+}
+
+document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+document.getElementById('hintBtn').addEventListener('click', showHint);
+renderProgress();
+</script>
+</body>
+</html>
