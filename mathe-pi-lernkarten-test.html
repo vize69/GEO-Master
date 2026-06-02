@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mathe Pi Lernkarten</title>
+  <style>
+    :root{--bg:#101827;--card:rgba(255,255,255,.13);--card2:rgba(255,255,255,.19);--text:#f7fafc;--muted:#b8c2d6;--accent:#7dd3fc;--good:#86efac;--bad:#fca5a5;--border:rgba(255,255,255,.18)}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#243757 0%,var(--bg) 58%,#090d16 100%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:18px}
+    .app{width:min(760px,100%);background:rgba(12,18,31,.76);border:1px solid var(--border);border-radius:28px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.4);backdrop-filter:blur(18px)}
+    h1{margin:0 0 6px;font-size:clamp(28px,6vw,42px);letter-spacing:-.04em}.sub{color:var(--muted);margin-bottom:18px;line-height:1.45}
+    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap}.pill{border:1px solid var(--border);background:rgba(255,255,255,.08);padding:8px 12px;border-radius:999px;font-size:14px}
+    .progress{height:10px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;margin-bottom:18px}.bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#c084fc);transition:width .25s ease}
+    .card{min-height:285px;border:1px solid var(--border);border-radius:26px;background:linear-gradient(160deg,var(--card2),var(--card));padding:24px;display:grid;align-content:center;cursor:pointer;user-select:none}
+    .label{color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:12px;margin-bottom:14px}.question{font-size:clamp(28px,7vw,50px);font-weight:800;letter-spacing:-.05em;line-height:1.08}.explain{color:var(--muted);font-size:18px;line-height:1.45;margin-top:14px}
+    .buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}button{border:0;border-radius:18px;padding:15px 16px;font-size:17px;font-weight:750;color:#08111f;background:var(--accent);cursor:pointer}.good{background:var(--good)}.bad{background:var(--bad)}
+    .result{display:none;border:1px solid var(--border);border-radius:24px;padding:20px;background:rgba(255,255,255,.08);margin-top:16px}.result h2{margin:0 0 8px;font-size:28px}ul{margin:12px 0 0;padding-left:22px;color:var(--muted);line-height:1.6}
+    @media(max-width:520px){.app{padding:18px;border-radius:24px}.buttons{grid-template-columns:1fr}.card{min-height:260px;padding:20px}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <h1>π Lernkarten</h1>
+  <div class="sub">Kleine Testdatei zur Zahl Pi und Kreisberechnung. Karte antippen zeigt die Lösung.</div>
+  <div class="topbar"><div class="pill" id="counter">Karte 1 von 5</div><div class="pill" id="score">Gewusst: 0 | Nochmal: 0</div></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <section class="card" id="card" onclick="flipCard()"><div><div class="label" id="sideLabel">Vorderseite</div><div class="question" id="cardText"></div><div class="explain" id="hintText">Tippe auf die Karte, um die Lösung zu sehen.</div></div></section>
+  <div class="buttons" id="buttons"><button class="bad" onclick="mark(false)">Nochmal üben</button><button class="good" onclick="mark(true)">Gewusst</button></div>
+  <section class="result" id="result"><h2>Runde fertig</h2><p id="resultText"></p><ul id="repeatList"></ul><button onclick="restart()">Neu starten</button></section>
+</main>
+<script>
+const cards=[
+{front:"Was ist π ungefähr?",back:"π ≈ 3,14",explain:"Pi ist eine unendliche Dezimalzahl. In der Schule rechnet man meistens mit 3,14."},
+{front:"Formel für den Umfang mit Durchmesser d?",back:"U = π · d",explain:"Der Umfang ist einmal außen herum. Mit Durchmesser rechnet man: Umfang = Pi mal Durchmesser."},
+{front:"Formel für den Umfang mit Radius r?",back:"U = 2 · π · r",explain:"Der Durchmesser ist doppelt so groß wie der Radius. Deshalb steht dort 2 mal Pi mal r."},
+{front:"Formel für die Kreisfläche?",back:"A = π · r²",explain:"Die Fläche ist der Bereich innen im Kreis. Wichtig: Beim Radius steht hoch 2."},
+{front:"d = 10 cm. Umfang ungefähr?",back:"U = 3,14 · 10 = 31,4 cm",explain:"Mit Durchmesser gilt U = π · d. Also 3,14 mal 10 cm."}
+];
+let index=0,flipped=false,known=0,repeat=0,repeatCards=[];
+const cardText=document.getElementById("cardText"),hintText=document.getElementById("hintText"),sideLabel=document.getElementById("sideLabel"),counter=document.getElementById("counter"),score=document.getElementById("score"),bar=document.getElementById("bar"),result=document.getElementById("result"),resultText=document.getElementById("resultText"),repeatList=document.getElementById("repeatList"),buttons=document.getElementById("buttons");
+function render(){if(index>=cards.length)return finish();flipped=false;const c=cards[index];cardText.textContent=c.front;hintText.textContent="Tippe auf die Karte, um die Lösung zu sehen.";sideLabel.textContent="Vorderseite";counter.textContent=`Karte ${index+1} von ${cards.length}`;score.textContent=`Gewusst: ${known} | Nochmal: ${repeat}`;bar.style.width=`${(index/cards.length)*100}%`}
+function flipCard(){const c=cards[index];flipped=!flipped;if(flipped){cardText.textContent=c.back;hintText.textContent=c.explain;sideLabel.textContent="Rückseite"}else{cardText.textContent=c.front;hintText.textContent="Tippe auf die Karte, um die Lösung zu sehen.";sideLabel.textContent="Vorderseite"}}
+function mark(isKnown){if(isKnown)known++;else{repeat++;repeatCards.push(cards[index])}index++;render()}
+function finish(){document.getElementById("card").style.display="none";buttons.style.display="none";result.style.display="block";bar.style.width="100%";counter.textContent="Fertig";score.textContent=`Gewusst: ${known} | Nochmal: ${repeat}`;resultText.textContent=`Du hast ${known} von ${cards.length} Karten als gewusst markiert.`;repeatList.innerHTML="";if(repeatCards.length){repeatCards.forEach(c=>{const li=document.createElement("li");li.textContent=`${c.front} → ${c.back}`;repeatList.appendChild(li)})}else{const li=document.createElement("li");li.textContent="Keine Wiederholung nötig.";repeatList.appendChild(li)}}
+function restart(){index=0;flipped=false;known=0;repeat=0;repeatCards=[];document.getElementById("card").style.display="grid";buttons.style.display="grid";result.style.display="none";render()}
+render();
+</script>
+</body>
+</html>
